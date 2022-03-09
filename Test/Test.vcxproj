@@ -29,7 +29,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -173,6 +173,7 @@
     <ClInclude Include="HUD.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="MainCharacter.h" />
+    <ClInclude Include="Paths.h" />
     <ClInclude Include="PicableItem.h" />
     <ClInclude Include="RenderController.h" />
     <ClInclude Include="resource.h" />

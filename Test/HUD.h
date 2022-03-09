@@ -67,10 +67,13 @@ enum class GameMode
 	DIALOG
 };
 
+class Button;
+
 class HUD : public DrawableObject
 {
 private:
 
+	GameMode currentGameMode = GameMode::MAIN_MENU;
 
 
 	CharTemplate* character = nullptr;
@@ -90,6 +93,9 @@ private:
 
 	sf::RectangleShape* rectForHPMPBars = nullptr;
 
+
+	std::vector<Button*> btnsOnWindow;
+
 public:
 
 	HUD();
@@ -107,6 +113,15 @@ public:
 
 	void drawHpMpBars(sf::RenderWindow* w, int const &hp, int const &mp);
 
+
+	void drawMainMenu(sf::RenderWindow* w);
+
+	void drawPauseMenu(sf::RenderWindow* w);
+
+	void drawSettingsMenu(sf::RenderWindow* w);
+
+	void drawGameHud(sf::RenderWindow* w);
+
 // DrawableObject base func {
 
 	virtual void drawOnWindow(sf::RenderWindow* w) override;
@@ -123,7 +138,12 @@ public:
 
 // DrawableObject base func }
 
+	// The parameter determines for which game state the buttons will be prepared:
+	// "mm" - main menu, "st" - settings, "pa" - pause.
+	void prepareBtnsForMenu(std::string &_param);
+	
 
+	
 
 
 private:
@@ -132,5 +152,79 @@ private:
 
 
 };
+
+
+enum class ButtonFunction
+{
+	ACCEPT,
+	CANCLE,
+	BACK,
+	SETTINGS,
+	NEW_GAME,
+	CONTINUE,
+	CLOSE,
+	NONE
+};
+
+
+
+
+class Button : public DrawableObject
+{
+private:
+
+	sf::Texture* baseText = nullptr;
+
+	sf::RectangleShape* buttonShape = nullptr;
+
+	ButtonFunction bf = ButtonFunction::NONE;
+
+	sf::Text* buttonText = nullptr;
+
+	int Yloc = 0;
+	int Xloc = 0;
+
+	int hight = 50;
+	int width = 20;
+
+public:
+
+	Button();
+
+	Button(ButtonFunction _bf, const char* _btnText);
+
+	~Button();
+
+
+// Base Drawable {
+
+	virtual void drawOnWindow(sf::RenderWindow* w) override;
+
+	virtual void setCurrentXYLocation(int xLoc, int yLoc) override;
+
+	virtual void setCurrentRotation(int rotation) override {};
+
+	virtual void setCurrentScale(float const& scaleX, float const& scaleY) override;
+
+	// Return <nullptr> always
+	virtual sf::Sprite* getDrawableSprite() override { return nullptr; }
+
+// Base Drawable }
+
+
+
+	ButtonFunction getBtnFunction() const { return bf; }
+
+	int getYLoc() const { return Yloc; }
+	int getXLoc() const { return Xloc; }
+
+	void setButtonText(std::string const &_text);
+	std::string getButtonText() const;
+
+	int getCharacterSize() const;
+	void setCharacterSize(int const  &_size);
+};
+
+
 
 #endif

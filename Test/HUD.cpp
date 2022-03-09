@@ -1,4 +1,5 @@
 #include "HUD.h"
+#include "Paths.h"
 
 #define LOG(str) printf("HUD::%s\n", str)
 
@@ -6,8 +7,10 @@
 
 HUD::HUD()
 {
-	const char* pathToPanel = "K:\\PixelSheat\\Knight\\HUD\\HUD_bot_panel.png";
-	const char* pathToBar = "K:\\PixelSheat\\Knight\\HUD\\hud_bar2.png";
+	using namespace PathToHUDResources;
+
+	const char* pathToPanel = pathToBotPanel;
+	const char* pathToBar = pathToHPMPBar;
 
 	sf::Texture* t = new sf::Texture();
 	t->loadFromFile(pathToPanel);
@@ -77,6 +80,53 @@ void HUD::drawOnWindow(sf::RenderWindow* w)
 		drawHpMpBars(w, 100, 100);
 	}
 }
+
+// Some game states draw {
+
+void HUD::drawGameHud(sf::RenderWindow* w)
+{
+	if (botPanel)
+	{
+		botPanel->setPosition(0, w->getSize().y - botPanel->getGlobalBounds().height);
+		w->draw(*botPanel);
+
+		if (character)
+		{
+			addInSocket(SocketFunc::WEAPON_SOCKET, character->getCurrentWeapon());
+		}
+
+
+		drawSockets(w);
+		drawHpMpBars(w, 100, 100);
+	}
+}
+
+void HUD::drawMainMenu(sf::RenderWindow* w)
+{
+	if (w && btnsOnWindow.size() > 0)
+	{
+		for (int i = 0; i < btnsOnWindow.size(); ++i)
+		{
+			btnsOnWindow[i]->setCurrentXYLocation(w->getSize().x,
+				(w->getSize().y / btnsOnWindow.size()) * (i + 1));
+			
+			btnsOnWindow[i]->drawOnWindow(w);
+		}
+	}
+}
+
+void HUD::drawPauseMenu(sf::RenderWindow* w)
+{
+
+}
+
+void HUD::drawSettingsMenu(sf::RenderWindow* w)
+{
+
+}
+
+
+// Some game states draw }
 
 void HUD::drawSockets(sf::RenderWindow* w)
 {
@@ -148,6 +198,36 @@ void HUD::addInSocket(SocketFunc sClass, DrawableObject* obj)
 	}
 
 }
+
+// Buttons preparation {
+
+void HUD::prepareBtnsForMenu(std::string& _param)
+{
+	if (_param == "mm")
+	{
+		Button* b = new Button(ButtonFunction::NEW_GAME, "New game");
+		Button* b2 = new Button(ButtonFunction::SETTINGS, "Settings");
+		Button* b3 = new Button(ButtonFunction::CLOSE, "Exit");
+
+		btnsOnWindow.push_back(b);
+		btnsOnWindow.push_back(b2);
+		btnsOnWindow.push_back(b3);
+	}
+	else if (_param == "st")
+	{
+
+	}
+	else if (_param == "pa")
+	{
+
+	}
+
+}
+
+
+
+// Buttons preparation }
+
 
 // HUD }
 
@@ -260,3 +340,120 @@ HUDSocket::~HUDSocket()
 }
 
 // HUDSocket }
+
+
+// Button {
+
+Button::Button()
+{
+	baseText = new sf::Texture();
+	baseText->loadFromFile(PathToButtonsResources::pathToTexture);
+
+	buttonShape = new sf::RectangleShape(sf::Vector2f(width, hight));
+	buttonShape->setOrigin(width / 2, hight / 2);
+	buttonShape->setTexture(baseText);
+
+	buttonText = new sf::Text();
+}
+
+Button::Button(ButtonFunction _bf, const char* _btnText)
+{
+	bf = _bf;
+
+	baseText = new sf::Texture();
+	baseText->loadFromFile(PathToButtonsResources::pathToTexture);
+
+	buttonShape = new sf::RectangleShape(sf::Vector2f(width, hight));
+	buttonShape->setOrigin(width / 2, hight / 2);
+	buttonShape->setTexture(baseText);
+
+	buttonText = new sf::Text();
+	buttonText->setString(_btnText);
+}
+
+Button::~Button()
+{
+	if (buttonShape)
+	{
+		delete buttonShape;
+	}
+
+	if (baseText)
+	{
+		delete baseText;
+	}
+
+	if (buttonText)
+	{
+		delete buttonText;
+	}
+}
+
+
+// Text support function {
+
+void Button::setButtonText(std::string const &_text)
+{
+	if (buttonText)
+	{
+		buttonText->setString(_text);
+	}
+}
+
+std::string Button::getButtonText() const
+{
+	if (!buttonText)
+		return "none";
+
+
+	return buttonText->getString();
+}
+
+int Button::getCharacterSize() const
+{
+	if (!buttonText)
+		return 0;
+
+	return buttonText->getCharacterSize();
+}
+
+void Button::setCharacterSize(int const& _size)
+{
+	if (buttonText)
+	{
+		buttonText->setCharacterSize(_size);
+	}
+}
+	
+	// Text support function }
+
+
+// Base drawable {
+
+void Button::drawOnWindow(sf::RenderWindow* w)
+{
+	if (buttonShape && w && buttonText)
+	{
+		buttonShape->setPosition(Xloc, Yloc);
+		w->draw(*buttonShape);
+	}
+}
+
+void Button::setCurrentXYLocation(int xLoc, int yLoc)
+{
+	Xloc = xLoc;
+	Yloc = yLoc;
+}
+
+void Button::setCurrentScale(float const& scaleX, float const& scaleY)
+{
+	if (buttonShape)
+	{
+		buttonShape->setScale(scaleX, scaleY);
+	}
+}	
+	
+	// Base drawable }
+
+
+// Button }
