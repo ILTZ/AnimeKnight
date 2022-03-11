@@ -3,24 +3,49 @@
 
 #define LOG(str) printf("HUD::%s\n", str)
 
+// Namespaces paths {
+
+namespace PathHUD
+{
+	namespace PathToButtonResources
+	{
+		const std::string pathToBtnUp	= getCurrentAssetsDirectory() + "HUD\\btnUp.png";
+		const std::string pathToBtnDown = getCurrentAssetsDirectory() + "HUD\\btnDown.png";
+		
+		const std::string pathToFont	= getCurrentAssetsDirectory() + "";
+	}
+	namespace PathToHUDResources
+	{
+		const std::string pathToBotPanel	= getCurrentAssetsDirectory() + "HUD\\HUD_bot_panel.png";
+		const std::string pathToHpMpBar		= getCurrentAssetsDirectory() + "HUD\\hud_bar2.png";
+
+		const std::string pathToHUDSocket	= getCurrentAssetsDirectory() + "HUD\\bot_panel_socket.png";
+	}
+	
+}
+
+// Namespaces paths }
+
+
+
+
+
 // HUD {
 
 HUD::HUD()
 {
-	using namespace PathToHUDResources;
+	using namespace PathHUD;
 
-	const char* pathToPanel = pathToBotPanel;
-	const char* pathToBar = pathToHPMPBar;
 
 	sf::Texture* t = new sf::Texture();
-	t->loadFromFile(pathToPanel);
+	t->loadFromFile(PathToHUDResources::pathToBotPanel);
 	botPanel = new sf::Sprite(*t);
 
 	allTextures.push_back(t);
 
 
 	sf::Texture* t2 = new sf::Texture();
-	t2->loadFromFile(pathToBar);
+	t2->loadFromFile(PathToHUDResources::pathToHpMpBar);
 
 	hpBarSprite = new sf::Sprite(*t2);
 	hpBarSprite->setOrigin(hpBarSprite->getGlobalBounds().width / 2, hpBarSprite->getGlobalBounds().height / 2);
@@ -238,10 +263,8 @@ void HUD::prepareBtnsForMenu(std::string& _param)
 
 HUDSocket::HUDSocket(SocketFunc wcClass, DrawableObject* object)
 {
-	const char* pathToDefaultSocketPanel = "K:\\PixelSheat\\Knight\\HUD\\bot_panel_socket.png";
-
 	socketText = new sf::Texture();
-	socketText->loadFromFile(pathToDefaultSocketPanel);
+	socketText->loadFromFile(PathHUD::PathToHUDResources::pathToHUDSocket);
 	socketToDraw = new sf::Sprite(*socketText);
 
 	socketToDraw->setOrigin(socketToDraw->getGlobalBounds().width / 2, socketToDraw->getGlobalBounds().height / 2);
@@ -346,12 +369,15 @@ HUDSocket::~HUDSocket()
 
 Button::Button()
 {
-	baseText = new sf::Texture();
-	baseText->loadFromFile(PathToButtonsResources::pathToTexture);
+	baseBtnUp = new sf::Texture();
+	baseBtnUp->loadFromFile(PathHUD::PathToButtonResources::pathToBtnUp);
+
+	baseBtnDown = new sf::Texture();
+	baseBtnDown->loadFromFile(PathHUD::PathToButtonResources::pathToBtnDown);
 
 	buttonShape = new sf::RectangleShape(sf::Vector2f(width, hight));
 	buttonShape->setOrigin(width / 2, hight / 2);
-	buttonShape->setTexture(baseText);
+	buttonShape->setTexture(baseBtnUp);
 
 	buttonText = new sf::Text();
 }
@@ -360,12 +386,15 @@ Button::Button(ButtonFunction _bf, const char* _btnText)
 {
 	bf = _bf;
 
-	baseText = new sf::Texture();
-	baseText->loadFromFile(PathToButtonsResources::pathToTexture);
+	baseBtnUp = new sf::Texture();
+	baseBtnUp->loadFromFile(PathHUD::PathToButtonResources::pathToBtnUp);
+
+	baseBtnDown = new sf::Texture();
+	baseBtnDown->loadFromFile(PathHUD::PathToButtonResources::pathToBtnDown);
 
 	buttonShape = new sf::RectangleShape(sf::Vector2f(width, hight));
 	buttonShape->setOrigin(width / 2, hight / 2);
-	buttonShape->setTexture(baseText);
+	buttonShape->setTexture(baseBtnUp);
 
 	buttonText = new sf::Text();
 	buttonText->setString(_btnText);
@@ -378,9 +407,14 @@ Button::~Button()
 		delete buttonShape;
 	}
 
-	if (baseText)
+	if (baseBtnUp)
 	{
-		delete baseText;
+		delete baseBtnUp;
+	}
+
+	if (baseBtnDown)
+	{
+		delete baseBtnDown;
 	}
 
 	if (buttonText)

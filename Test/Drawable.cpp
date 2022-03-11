@@ -19,7 +19,22 @@ AnimationList::AnimationList(std::string& pathToAnim, int spritesCount)
 
 AnimationList::~AnimationList()
 {
-	
+
+}
+
+AnimationList::AnimationList(const std::string& pathToAnim, int spritesCount)
+{
+	for (int i = 0; i < spritesCount; ++i)
+	{
+		sf::Texture* t = new sf::Texture();
+		t->loadFromFile(pathToAnim + "\\" + std::to_string(i) + ".png");
+		sf::Sprite* s = new sf::Sprite(*t);
+		// Set sprite center
+		s->setOrigin(s->getGlobalBounds().height / 2, s->getGlobalBounds().width / 2);
+
+		animationList.push_back(s);
+		textureList.push_back(t);
+	}
 }
 
 void AnimationList::drawSprite(sf::RenderWindow* w)

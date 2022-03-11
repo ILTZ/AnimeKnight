@@ -1,12 +1,9 @@
-#pragma once
-namespace PathToButtonsResources
-{
-	const char* pathToTexture = "";
-	const char* pathToFont = "";
-}
+#ifndef PATHS_H
+#define PATHS_H
 
-namespace PathToHUDResources
-{
-	const char* pathToBotPanel = "K:\\PixelSheat\\Knight\\HUD\\HUD_bot_panel.png";
-	const char* pathToHPMPBar = "K:\\PixelSheat\\Knight\\HUD\\hud_bar2.png";
-}
+#include <string>
+
+std::string getCurrentAssetsDirectory();
+
+
+#endif

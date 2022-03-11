@@ -1,7 +1,32 @@
 #include "MainCharacter.h"
 #include "WeaponList.h"
+#include "Paths.h"
 
 #define LOG(str,str2) printf("MainCharacter::LOG::%s::%i\n", str, str2)
+
+// Namespace paths {
+
+namespace PathCharacter
+{
+	namespace cMoveAnim
+	{
+		const std::string cIdle		= getCurrentAssetsDirectory() + "Sprites\\MainChar\\Idle";
+		const std::string cWalk		= getCurrentAssetsDirectory() + "Sprites\\MainChar\\Walking";
+		const std::string cJump		= getCurrentAssetsDirectory() + "Sprites\\MainChar\\jump_rot";
+	}
+
+	namespace cAtcAnim
+	{
+		const std::string cPunch	= getCurrentAssetsDirectory() + "Sprites\\MainChar\\fist_attack";
+		const std::string cSword	= getCurrentAssetsDirectory() + "Sprites\\MainChar\\sword_attack";
+		const std::string cAxe		= getCurrentAssetsDirectory() + "Sprites\\MainChar\\axe_attack";
+		const std::string cLance	= getCurrentAssetsDirectory() + "Sprites\\MainChar\\lance_attack";
+		const std::string cGun		= getCurrentAssetsDirectory() + "Sprites\\MainChar\\jump_rot";
+
+	}
+}
+
+// Namespace paths }
 
 
 MainCharacter::MainCharacter()
@@ -12,14 +37,11 @@ MainCharacter::MainCharacter()
 	// Check the problem with fucking delay!!!
  
 // Move animations {
+	using namespace PathCharacter;
 
-	std::string pTIdle = "K:\\PixelSheat\\Knight\\Sprites\\MainChar\\Idle";
-	std::string pTWalk = "K:\\PixelSheat\\Knight\\Sprites\\MainChar\\Walking";
-	std::string pTJump = "K:\\PixelSheat\\Knight\\Sprites\\MainChar\\jump_rot";
-
-	animationVector.insert({ static_cast<std::string>("idle"), AnimationList(pTIdle, 5) });
-	animationVector.insert({ static_cast<std::string>("run"), AnimationList(pTWalk, 5) });
-	animationVector.insert({ static_cast<std::string>("jump"), AnimationList(pTJump, 3) });
+	animationVector.insert({ static_cast<std::string>("idle"), AnimationList(cMoveAnim::cIdle, 5) });
+	animationVector.insert({ static_cast<std::string>("run"), AnimationList(cMoveAnim::cWalk, 5) });
+	animationVector.insert({ static_cast<std::string>("jump"), AnimationList(cMoveAnim::cJump, 3) });
 
 // Move animations }
 
@@ -28,15 +50,9 @@ MainCharacter::MainCharacter()
 
 // Attack animation {
 
-	std::string pTPunch = "K:\\PixelSheat\\Knight\\Sprites\\MainChar\\fist_attack";
-	std::string pTSword = "K:\\PixelSheat\\Knight\\Sprites\\MainChar\\sword_attack";
-	std::string pTAxe = "K:\\PixelSheat\\Knight\\Sprites\\MainChar\\axe_attack";
-	std::string pTLance = "K:\\PixelSheat\\Knight\\Sprites\\MainChar\\lance_attack";
-	std::string pTGun = "K:\\PixelSheat\\Knight\\Sprites\\MainChar\\gun_attack";
-
 	// Sword attack {
 
-	AnimationList swordAttack(pTSword, 3);
+	AnimationList swordAttack(cAtcAnim::cSword, 3);
 	
 		// Sword socket {
 
@@ -66,7 +82,7 @@ MainCharacter::MainCharacter()
 
 	// Fist attack {
 
-	animationVector.insert({ static_cast<std::string>("fist_attack"), AnimationList(pTPunch, 3) });
+	animationVector.insert({ static_cast<std::string>("fist_attack"), AnimationList(cAtcAnim::cPunch, 3) });
 
 	// Fist attack }
 
@@ -75,7 +91,7 @@ MainCharacter::MainCharacter()
 
 	// Axe attack {
 
-	AnimationList axeAttack(pTAxe, 3);
+	AnimationList axeAttack(cAtcAnim::cAxe, 3);
 
 		// Axe socket {
 
@@ -105,7 +121,7 @@ MainCharacter::MainCharacter()
 
 	// Lance attack {
 
-	AnimationList lanceAttack(pTLance, 3);
+	AnimationList lanceAttack(cAtcAnim::cLance, 3);
 
 		// Lance socket {
 		
@@ -135,7 +151,7 @@ MainCharacter::MainCharacter()
 
 	// Gun attack {
 
-	AnimationList gunAttack(pTGun, 3);
+	AnimationList gunAttack(cAtcAnim::cGun, 3);
 
 		// Gun socket {
 

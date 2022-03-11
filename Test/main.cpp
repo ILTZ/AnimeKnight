@@ -9,7 +9,7 @@
 
 using namespace sf;
 
-
+#include <filesystem>
 
 const int wWidth = 1200;
 const int wHeight = 900;
@@ -69,8 +69,7 @@ int main()
 	sf::Thread collisionProcessThread([&]
 		{
 			colHendler->collisionMainProcess();
-
-
+			
 		});
 
 	renderThread.launch();

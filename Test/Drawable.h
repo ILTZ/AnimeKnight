@@ -86,6 +86,8 @@ struct AnimationList
 
 	AnimationList(std::string &pathToAnim, int spritesCount);
 
+	AnimationList(const std::string& pathToAnim, int spritesCount);
+
 	AnimationList() {};
 
 	~AnimationList();

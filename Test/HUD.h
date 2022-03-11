@@ -153,6 +153,7 @@ private:
 
 };
 
+// Buttons {
 
 enum class ButtonFunction
 {
@@ -166,26 +167,56 @@ enum class ButtonFunction
 	NONE
 };
 
+namespace BtnFunc
+{
+	enum class MainMenu
+	{
+		NEW_GAME,
+		CONTINUE,
+		SETTING,
+		EXIT
+	};
 
+	enum class Settings
+	{
+		ACCEPT,
+		CANCLE,
+		DEFAULT_SETTINGS,
+		BACK
+	};
+
+	enum class Pause
+	{
+		CONTINUE,
+		BACK_TO_MAIN_MENU,
+		SAVE,
+		EXIT
+	};
+}
 
 
 class Button : public DrawableObject
 {
 private:
 
-	sf::Texture* baseText = nullptr;
-
+	// On click
+	sf::Texture* baseBtnUp = nullptr;
+	// Release
+	sf::Texture* baseBtnDown = nullptr;
+	// Btn form
 	sf::RectangleShape* buttonShape = nullptr;
-
+	// See in namespace "BtnFunc"
 	ButtonFunction bf = ButtonFunction::NONE;
 
 	sf::Text* buttonText = nullptr;
+	sf::Font textFont;
+
 
 	int Yloc = 0;
 	int Xloc = 0;
 
-	int hight = 50;
-	int width = 20;
+	int hight = 100;
+	int width = 40;
 
 public:
 
@@ -225,6 +256,6 @@ public:
 	void setCharacterSize(int const  &_size);
 };
 
-
+// Buttons }
 
 #endif
