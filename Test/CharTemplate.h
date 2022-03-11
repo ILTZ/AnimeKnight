@@ -84,6 +84,8 @@ public:
 
 	std::map<std::string, AnimationList> animationVector;
 
+	std::map<std::string, AnimationList*> animVec;
+
 	CurrentAnimation curAnim;
 
 	CurrentDirection curDir;

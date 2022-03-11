@@ -3,8 +3,13 @@
 #include "Paths.h"
 
 #define LOG(str,str2) printf("MainCharacter::LOG::%s::%i\n", str, str2)
-
-// Namespace paths {
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Paths to character resources {
 
 namespace PathCharacter
 {
@@ -22,12 +27,16 @@ namespace PathCharacter
 		const std::string cAxe		= getCurrentAssetsDirectory() + "Sprites\\MainChar\\axe_attack";
 		const std::string cLance	= getCurrentAssetsDirectory() + "Sprites\\MainChar\\lance_attack";
 		const std::string cGun		= getCurrentAssetsDirectory() + "Sprites\\MainChar\\jump_rot";
-
 	}
 }
 
-// Namespace paths }
-
+// Paths to character resources }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MainCharacter::MainCharacter()
 {
@@ -43,6 +52,11 @@ MainCharacter::MainCharacter()
 	animationVector.insert({ static_cast<std::string>("run"), AnimationList(cMoveAnim::cWalk, 5) });
 	animationVector.insert({ static_cast<std::string>("jump"), AnimationList(cMoveAnim::cJump, 3) });
 
+	animVec.insert({static_cast<std::string>("idle"),	new AnimationList(cMoveAnim::cIdle, 5)});
+	animVec.insert({static_cast<std::string>("run"),	new AnimationList(cMoveAnim::cWalk, 5)});
+	animVec.insert({static_cast<std::string>("jump"),	new AnimationList(cMoveAnim::cJump, 3)});
+
+
 // Move animations }
 
 	std::vector<sf::Vector2i> coordVector;
@@ -52,11 +66,11 @@ MainCharacter::MainCharacter()
 
 	// Sword attack {
 
-	AnimationList swordAttack(cAtcAnim::cSword, 3);
+	AnimationList* swordAtc = new AnimationList(cAtcAnim::cSword, 3);
 	
 		// Sword socket {
 
-		DrawableSocket weapon_socket_sword(SocketName::WEAPON);
+		DrawableSocket* weapon_socket_sword = new DrawableSocket(SocketName::WEAPON);
 		coordVector.clear();
 		coordVector.push_back(sf::Vector2i(-75, -50));
 		coordVector.push_back(sf::Vector2i(-80, 100));
@@ -67,13 +81,13 @@ MainCharacter::MainCharacter()
 		rotateVector.push_back(-80);
 		rotateVector.push_back(-70);
 
-		weapon_socket_sword.setCoordsVector(coordVector);
-		weapon_socket_sword.setRotationVector(rotateVector);
-		swordAttack.addSocket(weapon_socket_sword);
+		weapon_socket_sword->setCoordsVector(coordVector);
+		weapon_socket_sword->setRotationVector(rotateVector);
+		swordAtc->addSocket(weapon_socket_sword);
 
 		// Sword socket }
 
-	animationVector.insert({ static_cast<std::string>("sword_attack"), swordAttack/*AnimationList(pTSword, 3)*/});
+	animVec.insert({ static_cast<std::string>("sword_attack"), swordAtc });
 
 	// Sword attack }
 
@@ -91,11 +105,11 @@ MainCharacter::MainCharacter()
 
 	// Axe attack {
 
-	AnimationList axeAttack(cAtcAnim::cAxe, 3);
+	AnimationList* axeAttack = new AnimationList(cAtcAnim::cAxe, 3);
 
 		// Axe socket {
 
-		DrawableSocket weapon_socket_axe(SocketName::WEAPON);
+		DrawableSocket* weapon_socket_axe = new DrawableSocket(SocketName::WEAPON);
 		coordVector.clear();
 		coordVector.push_back(sf::Vector2i(70, 50));
 		coordVector.push_back(sf::Vector2i(-100, 20));
@@ -106,13 +120,13 @@ MainCharacter::MainCharacter()
 		rotateVector.push_back(-25);
 		rotateVector.push_back(-20);
 
-		weapon_socket_axe.setCoordsVector(coordVector);
-		weapon_socket_axe.setRotationVector(rotateVector);
-		axeAttack.addSocket(weapon_socket_axe);
+		weapon_socket_axe->setCoordsVector(coordVector);
+		weapon_socket_axe->setRotationVector(rotateVector);
+		axeAttack->addSocket(weapon_socket_axe);
 
 		// Axe socket }
 
-	animationVector.insert({ static_cast<std::string>("axe_attack"), axeAttack});
+	animVec.insert({ static_cast<std::string>("axe_attack"), axeAttack});
 
 	// Axe attack }
 
@@ -121,11 +135,11 @@ MainCharacter::MainCharacter()
 
 	// Lance attack {
 
-	AnimationList lanceAttack(cAtcAnim::cLance, 3);
+	AnimationList* lanceAttack = new AnimationList(cAtcAnim::cLance, 3);
 
 		// Lance socket {
 		
-		DrawableSocket weapon_socket_lance(SocketName::WEAPON);
+		DrawableSocket* weapon_socket_lance = new DrawableSocket(SocketName::WEAPON);
 		coordVector.clear();
 		coordVector.push_back(sf::Vector2i(-20, -40));
 		coordVector.push_back(sf::Vector2i(-100, 70));
@@ -136,13 +150,13 @@ MainCharacter::MainCharacter()
 		rotateVector.push_back(-80);
 		rotateVector.push_back(-78);
 
-		weapon_socket_lance.setCoordsVector(coordVector);
-		weapon_socket_lance.setRotationVector(rotateVector);
-		lanceAttack.addSocket(weapon_socket_lance);
+		weapon_socket_lance->setCoordsVector(coordVector);
+		weapon_socket_lance->setRotationVector(rotateVector);
+		lanceAttack->addSocket(weapon_socket_lance);
 
 		// Lance socket }
 
-	animationVector.insert({ static_cast<std::string>("lance_attack"), lanceAttack});
+	animVec.insert({ static_cast<std::string>("lance_attack"), lanceAttack});
 
 	// Lance attack }
 
@@ -151,13 +165,13 @@ MainCharacter::MainCharacter()
 
 	// Gun attack {
 
-	AnimationList gunAttack(cAtcAnim::cGun, 3);
+	AnimationList* gunAttack = new AnimationList(cAtcAnim::cGun, 3);
 
 		// Gun socket {
 
 		// Gun socket }
 
-	animationVector.insert({ static_cast<std::string>("gun_attack"), gunAttack });
+	animVec.insert({ static_cast<std::string>("gun_attack"), gunAttack });
 
 	// Gun attack }
 
@@ -187,7 +201,6 @@ MainCharacter::MainCharacter()
 void MainCharacter::drawOnWindow(sf::RenderWindow* w) 
 {
 	
-
 	std::string findKey = "";
 	
 	// Set current animation {
@@ -245,13 +258,13 @@ void MainCharacter::drawOnWindow(sf::RenderWindow* w)
 	// Set current animation }
 
 
-	auto temp = animationVector.find(findKey);
-	if (temp != animationVector.end())
+	auto temp = animVec.find(findKey);
+	if (temp != animVec.end())
 	{
 		// Attack animation get stuck without it {
 		if (curAnim == CurrentAnimation::ATTACK)
 		{
-			if (temp->second.isDoCircle())
+			if (temp->second->isDoCircle())
 			{
 				curAnim = CurrentAnimation::IDLE;
 				return;
@@ -262,16 +275,16 @@ void MainCharacter::drawOnWindow(sf::RenderWindow* w)
 
 		toFallCont();
 
-		temp->second.setDirection(curDir);
-		temp->second.setXYLocation(curXLocation, curYLocation);
-		temp->second.drawSprite(w);
-		drawCollision(w, temp->second.getCurrentAnimationSprite());
+		temp->second->setDirection(curDir);
+		temp->second->setXYLocation(curXLocation, curYLocation);
+		temp->second->drawSprite(w);
+		drawCollision(w, temp->second->getCurrentAnimationSprite());
 
 		
 
 		if (checkTimer())
 		{
-			temp->second.nextSprite();
+			temp->second->nextSprite();
 		}
 	}
 
@@ -426,10 +439,10 @@ void MainCharacter::addWeaponInSocket(DrawableObject* weapon, WeaponClass wClass
 		break;
 	} 
 
-	auto animList = animationVector.find(findKey);
-	if (animList != animationVector.end())
+	auto anim = animVec.find(findKey);
+	if (anim != animVec.end())
 	{
-		animList->second.addWeaponInSocket(weapon);
+		anim->second->addWeaponInSocket(weapon);
 	}
 
 }

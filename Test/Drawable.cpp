@@ -19,7 +19,24 @@ AnimationList::AnimationList(std::string& pathToAnim, int spritesCount)
 
 AnimationList::~AnimationList()
 {
+	for (int i = 0; i < animationList.size(); ++i)
+	{
+		if (animationList[i])
+		{
+			//delete animationList[i];
+		}
+		animationList.clear();
+	}
 
+	for (int i = 0; i < textureList.size(); ++i)
+	{
+		if (textureList[i])
+		{
+			//delete textureList[i];
+		}
+		textureList.clear();
+	}
+	
 }
 
 AnimationList::AnimationList(const std::string& pathToAnim, int spritesCount)
@@ -54,15 +71,15 @@ void AnimationList::drawSprite(sf::RenderWindow* w)
 
 
 	
-	if (allSockets.size() > 0)
+	if (allSocketsPtr.size() > 0)
 	{
-		for (auto el : allSockets)
+		for (auto el : allSocketsPtr)
 		{
 
-			sf::Vector2i coords = el.getSocketCoord(currentAnimCount);
-			int rot = el.getSocketRotation(currentAnimCount);
+			sf::Vector2i coords = el->getSocketCoord(currentAnimCount);
+			int rot = el->getSocketRotation(currentAnimCount);
 
-			auto obj = el.getDrawableObject();
+			auto obj = el->getDrawableObject();
 
 			if (!obj)
 				return;
@@ -146,11 +163,11 @@ void AnimationList::addWeaponInSocket(DrawableObject* weapon)
 {
 	if (weapon)
 	{
-		for (DrawableSocket &socket : allSockets)
+		for(DrawableSocket* s :allSocketsPtr)
 		{
-			if (socket.getPurpose() == SocketName::WEAPON)
+			if (s->getPurpose() == SocketName::WEAPON)
 			{
-				socket.setDrawableObject(weapon);
+				s->setDrawableObject(weapon);
 			}
 		}
 	}
@@ -164,6 +181,12 @@ sf::Sprite* AnimationList::getCurrentAnimationSprite()
 	return animationList[currentAnimCount];
 }
 
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 // Socket }
 
 DrawableSocket::DrawableSocket(SocketName sName)
@@ -189,6 +212,7 @@ int DrawableSocket::getSocketRotation(int const& rotCount) const
 	return rotationVectorLeft[rotCount];
 }
 
-
-
 // Socket }
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
