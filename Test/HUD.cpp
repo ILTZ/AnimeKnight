@@ -12,7 +12,7 @@ namespace PathHUD
 		const std::string pathToBtnUp	= getCurrentAssetsDirectory() + "HUD\\btnUp.png";
 		const std::string pathToBtnDown = getCurrentAssetsDirectory() + "HUD\\btnDown.png";
 		
-		const std::string pathToFont	= getCurrentAssetsDirectory() + "";
+		const std::string pathToFont	= getCurrentAssetsDirectory() + "HUD\\Fonts\\Game_Of_Squids.ttf";
 	}
 	namespace PathToHUDResources
 	{
@@ -64,6 +64,8 @@ HUD::HUD()
 	addSocket(SocketFunc::MAGIC_SOCKET);
 	addSocket(SocketFunc::POUTION_SOCKET);
 	addSocket(SocketFunc::EMPTY_SOCKET);
+
+	prepareBtnsForMenu(static_cast<std::string>("mm"));
 }
 
 HUD::~HUD()
@@ -90,7 +92,7 @@ HUD::~HUD()
 
 void HUD::drawOnWindow(sf::RenderWindow* w)
 {
-	if (botPanel)
+	/*if (botPanel)
 	{
 		botPanel->setPosition(0, w->getSize().y - botPanel->getGlobalBounds().height);
 		w->draw(*botPanel);
@@ -103,7 +105,9 @@ void HUD::drawOnWindow(sf::RenderWindow* w)
 
 		drawSockets(w);
 		drawHpMpBars(w, 100, 100);
-	}
+	}*/
+	drawGameHud(w);
+	drawMainMenu(w);
 }
 
 // Some game states draw {
@@ -132,8 +136,8 @@ void HUD::drawMainMenu(sf::RenderWindow* w)
 	{
 		for (int i = 0; i < btnsOnWindow.size(); ++i)
 		{
-			btnsOnWindow[i]->setCurrentXYLocation(w->getSize().x,
-				(w->getSize().y / btnsOnWindow.size()) * (i + 1));
+			btnsOnWindow[i]->setCurrentXYLocation(w->getSize().x / 2,
+				((w->getSize().y / 2) / (btnsOnWindow.size()) * (i + 1)));
 			
 			btnsOnWindow[i]->drawOnWindow(w);
 		}
@@ -224,15 +228,15 @@ void HUD::addInSocket(SocketFunc sClass, DrawableObject* obj)
 
 }
 
-// Buttons preparation {
+// Buttons {
 
-void HUD::prepareBtnsForMenu(std::string& _param)
+void HUD::prepareBtnsForMenu(std::string const &_param)
 {
 	if (_param == "mm")
 	{
-		Button* b = new Button(ButtonFunction::NEW_GAME, "New game");
-		Button* b2 = new Button(ButtonFunction::SETTINGS, "Settings");
-		Button* b3 = new Button(ButtonFunction::CLOSE, "Exit");
+		Button* b = new Button(BtnFunc::BtnFunc::MM_NEW_GAME, "New game");
+		Button* b2 = new Button(BtnFunc::BtnFunc::MM_SETTING, "Settings");
+		Button* b3 = new Button(BtnFunc::BtnFunc::EXIT, "Exit");
 
 		btnsOnWindow.push_back(b);
 		btnsOnWindow.push_back(b2);
@@ -244,14 +248,33 @@ void HUD::prepareBtnsForMenu(std::string& _param)
 	}
 	else if (_param == "pa")
 	{
-
+		Button* b = new Button();
 	}
 
 }
 
+void HUD::clearBtnsStorage()
+{
+	if (btnsOnWindow.size() > 0)
+	{
+		btnsOnWindow.clear();
+	}
+}
 
+bool HUD::checkMouseClickOnButton(sf::Vector2i const& _mousePosition)
+{
+	for (Button* btn : btnsOnWindow)
+	{
+		if (btn->checkMouseClick(_mousePosition))
+		{
 
-// Buttons preparation }
+		}
+	}
+
+	return true;
+}
+
+// Buttons }
 
 
 // HUD }
@@ -376,28 +399,22 @@ Button::Button()
 	baseBtnDown->loadFromFile(PathHUD::PathToButtonResources::pathToBtnDown);
 
 	buttonShape = new sf::RectangleShape(sf::Vector2f(width, hight));
-	buttonShape->setOrigin(width / 2, hight / 2);
+	buttonShape->setOrigin(width / 2.0, hight / 2.0);
 	buttonShape->setTexture(baseBtnUp);
 
 	buttonText = new sf::Text();
+	textFont.loadFromFile(PathHUD::PathToButtonResources::pathToFont);
+	buttonText->setFont(textFont);
+	buttonText->setFillColor(sf::Color::Black);
 }
 
-Button::Button(ButtonFunction _bf, const char* _btnText)
+Button::Button(BtnFunc::BtnFunc _bf, const char* _btnText) : Button()
 {
-	bf = _bf;
 
-	baseBtnUp = new sf::Texture();
-	baseBtnUp->loadFromFile(PathHUD::PathToButtonResources::pathToBtnUp);
-
-	baseBtnDown = new sf::Texture();
-	baseBtnDown->loadFromFile(PathHUD::PathToButtonResources::pathToBtnDown);
-
-	buttonShape = new sf::RectangleShape(sf::Vector2f(width, hight));
-	buttonShape->setOrigin(width / 2, hight / 2);
-	buttonShape->setTexture(baseBtnUp);
-
-	buttonText = new sf::Text();
+	buttonFunction = _bf;
+	//buttonText = new sf::Text();
 	buttonText->setString(_btnText);
+
 }
 
 Button::~Button()
@@ -421,6 +438,32 @@ Button::~Button()
 	{
 		delete buttonText;
 	}
+}
+
+bool Button::checkMouseClick(sf::Vector2i const &mousePos)
+{
+	if (buttonShape)
+	{
+		int xl = (buttonShape->getPosition().x + (buttonShape->getGlobalBounds().width / 2));
+		int sr = (buttonShape->getPosition().x - (buttonShape->getGlobalBounds().width / 2));
+		int hb = (buttonShape->getPosition().y + (buttonShape->getGlobalBounds().height / 2));
+		int hu = (buttonShape->getPosition().y - (buttonShape->getGlobalBounds().height / 2));
+
+		if ((mousePos.x <= (buttonShape->getPosition().x + (buttonShape->getGlobalBounds().width / 2)))
+			&&
+			(mousePos.x >= (buttonShape->getPosition().x - (buttonShape->getGlobalBounds().width / 2)))
+			&&
+			(mousePos.y <= (buttonShape->getPosition().y + (buttonShape->getGlobalBounds().height / 2)))
+			&&
+			(mousePos.y >= (buttonShape->getPosition().y - (buttonShape->getGlobalBounds().height / 2)))
+			)
+		{
+			isPressed = true;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
@@ -468,8 +511,21 @@ void Button::drawOnWindow(sf::RenderWindow* w)
 {
 	if (buttonShape && w && buttonText)
 	{
+		if (!isPressed)
+		{
+			buttonShape->setTexture(baseBtnUp);
+		}
+		else
+		{
+			buttonShape->setTexture(baseBtnDown);
+		}
+
 		buttonShape->setPosition(Xloc, Yloc);
+		buttonText->setOrigin(buttonText->getGlobalBounds().width / 2, buttonText->getGlobalBounds().height / 2);
+		buttonText->setPosition(Xloc, Yloc);
+
 		w->draw(*buttonShape);
+		w->draw(*buttonText);
 	}
 }
 

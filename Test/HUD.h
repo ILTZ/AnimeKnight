@@ -64,7 +64,9 @@ enum class GameMode
 	PAUSE,
 	DEATH,
 	INVENTORY,
-	DIALOG
+	DIALOG,
+	GAME_PROCESS,
+	NONE
 };
 
 class Button;
@@ -140,10 +142,11 @@ public:
 
 	// The parameter determines for which game state the buttons will be prepared:
 	// "mm" - main menu, "st" - settings, "pa" - pause.
-	void prepareBtnsForMenu(std::string &_param);
+	void prepareBtnsForMenu(std::string const &_param);
 	
-
+	void clearBtnsStorage();
 	
+	bool checkMouseClickOnButton(sf::Vector2i const &_mousePosition);
 
 
 private:
@@ -155,43 +158,28 @@ private:
 
 // Buttons {
 
-enum class ButtonFunction
-{
-	ACCEPT,
-	CANCLE,
-	BACK,
-	SETTINGS,
-	NEW_GAME,
-	CONTINUE,
-	CLOSE,
-	NONE
-};
-
 namespace BtnFunc
 {
-	enum class MainMenu
+	enum class BtnFunc
 	{
-		NEW_GAME,
-		CONTINUE,
-		SETTING,
+		NONE,
+		// mainMenu
+		MM_NEW_GAME,
+		MM_CONTINUE,
+		MM_SETTING,
+		// settings
+		S_ACCEPT,
+		S_CANCLE,
+		S_DEFAULT_SETTINGS,
+		S_BACK,
+		// pause
+		PA_CONTINUE,
+		PA_BACK_TO_MAIN_MENU,
+		PA_SAVE,
+
 		EXIT
 	};
 
-	enum class Settings
-	{
-		ACCEPT,
-		CANCLE,
-		DEFAULT_SETTINGS,
-		BACK
-	};
-
-	enum class Pause
-	{
-		CONTINUE,
-		BACK_TO_MAIN_MENU,
-		SAVE,
-		EXIT
-	};
 }
 
 
@@ -206,7 +194,7 @@ private:
 	// Btn form
 	sf::RectangleShape* buttonShape = nullptr;
 	// See in namespace "BtnFunc"
-	ButtonFunction bf = ButtonFunction::NONE;
+	BtnFunc::BtnFunc buttonFunction = BtnFunc::BtnFunc::NONE;
 
 	sf::Text* buttonText = nullptr;
 	sf::Font textFont;
@@ -216,13 +204,15 @@ private:
 	int Xloc = 0;
 
 	int hight = 100;
-	int width = 40;
+	int width = 300;
+
+	bool isPressed = false;
 
 public:
 
 	Button();
 
-	Button(ButtonFunction _bf, const char* _btnText);
+	Button(BtnFunc::BtnFunc _bf, const char* _btnText);
 
 	~Button();
 
@@ -244,7 +234,7 @@ public:
 
 
 
-	ButtonFunction getBtnFunction() const { return bf; }
+	BtnFunc::BtnFunc getBtnFunction() const { return buttonFunction; }
 
 	int getYLoc() const { return Yloc; }
 	int getXLoc() const { return Xloc; }
@@ -254,6 +244,10 @@ public:
 
 	int getCharacterSize() const;
 	void setCharacterSize(int const  &_size);
+
+	void setBtnIsPressed(bool const& _value) { isPressed = _value; }
+
+	bool checkMouseClick(sf::Vector2i const &_mousePos);
 };
 
 // Buttons }

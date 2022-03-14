@@ -69,7 +69,7 @@ private:
 
 	HUD* hud = nullptr;
 
-
+	GameMode curGameMode = GameMode::NONE;
 
 public:
 	EventHandler();
