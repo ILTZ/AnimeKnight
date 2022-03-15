@@ -50,7 +50,8 @@ int main()
 		{
 			RenderController* rc = new RenderController(wWidth, wHeight);
 			rc->addDrawableToAnimationsObject(cahr);
-			rc->addDrawableToAnimationsObject(hud);
+			rc->setHUD(hud);
+			//rc->addDrawableToAnimationsObject(hud);
 			rc->addSpriteToBackgroundLayout(s);
 			//rc->setCurrentFrameRate(frameRate);
 

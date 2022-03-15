@@ -34,6 +34,8 @@ namespace PathHUD
 
 HUD::HUD()
 {
+	supMutex = new sf::Mutex();
+
 	using namespace PathHUD;
 
 
@@ -88,26 +90,26 @@ HUD::~HUD()
 		delete rectForHPMPBars;
 		rectForHPMPBars = nullptr;
 	}
+	if (supMutex)
+	{
+		delete supMutex;
+		supMutex = nullptr;
+	}
 }
 
 void HUD::drawOnWindow(sf::RenderWindow* w)
 {
-	/*if (botPanel)
-	{
-		botPanel->setPosition(0, w->getSize().y - botPanel->getGlobalBounds().height);
-		w->draw(*botPanel);
 
-		if (character)
-		{
-			addInSocket(SocketFunc::WEAPON_SOCKET, character->getCurrentWeapon());
-		}
-
-
-		drawSockets(w);
-		drawHpMpBars(w, 100, 100);
-	}*/
 	drawGameHud(w);
 	drawMainMenu(w);
+
+	switch (currentGameMode)
+	{
+	
+
+	default:
+		break;
+	}
 }
 
 // Some game states draw {
@@ -146,7 +148,16 @@ void HUD::drawMainMenu(sf::RenderWindow* w)
 
 void HUD::drawPauseMenu(sf::RenderWindow* w)
 {
+	if (w && btnsOnWindow.size() > 0)
+	{
+		for (int i = 0; i < btnsOnWindow.size(); ++i)
+		{
+			btnsOnWindow[i]->setCurrentXYLocation(w->getSize().x / 2,
+				((w->getSize().y / 2) / (btnsOnWindow.size()) * (i + 1)));
 
+			btnsOnWindow[i]->drawOnWindow(w);
+		}
+	}
 }
 
 void HUD::drawSettingsMenu(sf::RenderWindow* w)
@@ -236,11 +247,16 @@ void HUD::prepareBtnsForMenu(std::string const &_param)
 	{
 		Button* b = new Button(BtnFunc::BtnFunc::MM_NEW_GAME, "New game");
 		Button* b2 = new Button(BtnFunc::BtnFunc::MM_SETTING, "Settings");
-		Button* b3 = new Button(BtnFunc::BtnFunc::EXIT, "Exit");
+		Button* b3 = new Button(BtnFunc::BtnFunc::MM_EXIT, "Exit");
+
+		supMutex->lock();
+		btnsOnWindow.clear();
 
 		btnsOnWindow.push_back(b);
 		btnsOnWindow.push_back(b2);
 		btnsOnWindow.push_back(b3);
+
+		supMutex->unlock();
 	}
 	else if (_param == "st")
 	{
@@ -248,7 +264,21 @@ void HUD::prepareBtnsForMenu(std::string const &_param)
 	}
 	else if (_param == "pa")
 	{
-		Button* b = new Button();
+		Button* b = new Button(BtnFunc::BtnFunc::PA_CONTINUE, "Continue");
+		Button* b2 = new Button(BtnFunc::BtnFunc::PA_BACK_TO_MAIN_MENU, "Main Menu");
+		Button* b3 = new Button(BtnFunc::BtnFunc::PA_SAVE, "Save");
+		Button* b4 = new Button(BtnFunc::BtnFunc::PA_EXIT, "Exit");
+
+		supMutex->lock();
+		btnsOnWindow.clear();
+
+		btnsOnWindow.push_back(b);
+		btnsOnWindow.push_back(b2);
+		btnsOnWindow.push_back(b3);
+		btnsOnWindow.push_back(b4);
+
+		supMutex->unlock();
+
 	}
 
 }
@@ -265,13 +295,36 @@ bool HUD::checkMouseClickOnButton(sf::Vector2i const& _mousePosition)
 {
 	for (Button* btn : btnsOnWindow)
 	{
+		if (!btn)
+			continue;
+
 		if (btn->checkMouseClick(_mousePosition))
 		{
-
+			return true;
 		}
 	}
 
-	return true;
+	return false;
+}
+
+std::tuple<bool, BtnFunc::BtnFunc> HUD::dropIsClickedButoonStatus() const&
+{
+	BtnFunc::BtnFunc tempFucnc = BtnFunc::BtnFunc::NONE;
+
+	for (Button* btn : btnsOnWindow)
+	{
+		if (!btn)
+			continue;
+
+		if (btn->getBtnIsPressedStatus())
+		{
+			btn->setBtnIsPressed(false);
+			tempFucnc = btn->getBtnFunction();
+
+			return std::make_tuple(true, tempFucnc);
+		}
+	}
+	return std::make_tuple(false, tempFucnc);
 }
 
 // Buttons }
@@ -511,18 +564,23 @@ void Button::drawOnWindow(sf::RenderWindow* w)
 {
 	if (buttonShape && w && buttonText)
 	{
+		buttonText->setOrigin(buttonText->getGlobalBounds().width / 2, buttonText->getGlobalBounds().height / 2);
+		buttonShape->setPosition(Xloc, Yloc);
+
 		if (!isPressed)
 		{
 			buttonShape->setTexture(baseBtnUp);
+			buttonText->setPosition(Xloc, Yloc - 10);
 		}
 		else
 		{
 			buttonShape->setTexture(baseBtnDown);
+			buttonText->setPosition(Xloc, Yloc + 8.0);
 		}
 
-		buttonShape->setPosition(Xloc, Yloc);
-		buttonText->setOrigin(buttonText->getGlobalBounds().width / 2, buttonText->getGlobalBounds().height / 2);
-		buttonText->setPosition(Xloc, Yloc);
+		
+
+		
 
 		w->draw(*buttonShape);
 		w->draw(*buttonText);

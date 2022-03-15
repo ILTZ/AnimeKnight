@@ -6,6 +6,9 @@
 #include "HUD.h"
 #include "Level.h"
 
+class RenderController;
+
+
 class CollisionHendler
 {
 private:
@@ -25,6 +28,8 @@ private:
 	bool sceneWasCrete = false;
 
 	sf::Mutex* collisionMutex = nullptr;
+
+	RenderController* renderController = nullptr;
 
 public:
 
@@ -51,11 +56,15 @@ public:
 	void setSceneCreateStatus(bool const& vakue) { sceneWasCrete = true; }
 	bool getSceneCreateStatus() const { sceneWasCrete; }
 
+	void setRenderController(RenderController* _rc) { renderController = _rc; }
 
 
 	void collisionMainProcess();
 
 private:
+
+
+
 };
 
 
@@ -71,6 +80,8 @@ private:
 
 	GameMode curGameMode = GameMode::NONE;
 
+	RenderController* renderController = nullptr;
+
 public:
 	EventHandler();
 	
@@ -84,7 +95,14 @@ public:
 
 	void setHUD(HUD* h) { hud = h; }
 
+	void setGameMode(GameMode const& _gm) { curGameMode = _gm; }
+	GameMode getGameMode() const { return curGameMode; }
 
+private:
+
+	void setRenderController(RenderController* _rc) { renderController = _rc; }
+
+	void clickOnButtonCommandHandler(BtnFunc::BtnFunc const& _func);
 };
 
 

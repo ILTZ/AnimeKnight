@@ -28,6 +28,40 @@ RenderController::RenderController(int const& wWidth, int const& wHeight)
 	allLevels.push_back(nl);
 }
 
+void RenderController::drawProcess()
+{
+	if (eventHandler)
+	{
+		switch (eventHandler->getGameMode())
+		{
+		case GameMode::GAME_PROCESS:
+			allLevels[currentLvlCount]->drawLevel(mainWindow);
+			if (hud)
+				hud->drawGameHud(mainWindow);
+			drawAnimationObjects();
+			break;
+
+		case GameMode::PAUSE:
+			allLevels[currentLvlCount]->drawLevel(mainWindow);
+			if (hud)
+				hud->drawPauseMenu(mainWindow);
+			drawAnimationObjects();
+			break;
+
+		case GameMode::MAIN_MENU:
+			if (hud)
+				hud->drawMainMenu(mainWindow);
+
+		case GameMode::INVENTORY:
+
+			break;
+
+		case GameMode::DEATH:
+
+			break;
+		}
+	}
+}
 
 
 void RenderController::mainRenderProcess()
@@ -67,9 +101,11 @@ void RenderController::mainRenderProcess()
 		
 		renderMutex.lock();
 
-		allLevels[0]->drawLevel(mainWindow);
+		//allLevels[0]->drawLevel(mainWindow);
 
-		drawAnimationObjects();
+		//drawAnimationObjects();
+
+		drawProcess();
 
 		renderMutex.unlock();
 		

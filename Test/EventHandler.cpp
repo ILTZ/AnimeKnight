@@ -2,6 +2,8 @@
 #define LOG(whichHandler, message) printf("Handler::%s::%s\n", whichHandler, message)
 #include <iostream>
 
+#include "RenderController.h"
+
 EventHandler::EventHandler()
 {
 	curGameMode = GameMode::MAIN_MENU;
@@ -107,6 +109,12 @@ void EventHandler::doHandlerWork()
 						currentPawn->moveToSomeSide(CurrentDirection::BOT);
 						break;*/
 
+				case sf::Keyboard::Escape:
+					if (hud)
+						hud->prepareBtnsForMenu("pa");
+					curGameMode = GameMode::PAUSE;
+					break;
+
 
 
 				case sf::Keyboard::Q:
@@ -209,18 +217,94 @@ void EventHandler::doHandlerWork()
 				mainWindow->close();
 			}
 
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape &&
+					curGameMode == GameMode::PAUSE)
+					curGameMode = GameMode::GAME_PROCESS;
+					
+				
+				
+			}
+
+
 			if (event.type == sf::Event::MouseButtonPressed)
 			{
 				hud->checkMouseClickOnButton(sf::Mouse::getPosition(*mainWindow));
 			}
 			if (event.type == sf::Event::MouseButtonReleased)
 			{
-				hud->checkMouseClickOnButton(sf::Mouse::getPosition(*mainWindow));
+				bool result;
+				BtnFunc::BtnFunc temp;
+
+				std::tie(result, temp) = hud->dropIsClickedButoonStatus();
+
+				if (result)
+				{
+					clickOnButtonCommandHandler(temp);
+				}
+				
 			}
 		}
 	}
 }
 
+
+void EventHandler::clickOnButtonCommandHandler(BtnFunc::BtnFunc const& _func)
+{
+	if (curGameMode == GameMode::MAIN_MENU)
+	{
+		switch (_func)
+		{
+		case BtnFunc::BtnFunc::MM_NEW_GAME:
+			curGameMode = GameMode::GAME_PROCESS;
+			break;
+
+		case BtnFunc::BtnFunc::MM_CONTINUE:
+
+			break;
+
+		case BtnFunc::BtnFunc::MM_SETTING:
+
+			break;
+
+		case BtnFunc::BtnFunc::MM_EXIT:
+			mainWindow->close();
+			break;
+
+		default:
+
+			break;
+		}
+	}	// Main menu }	
+	else if (curGameMode == GameMode::PAUSE)
+	{
+		switch (_func)
+		{
+		case BtnFunc::BtnFunc::PA_BACK_TO_MAIN_MENU:
+			if (hud)
+				hud->prepareBtnsForMenu("mm");
+			curGameMode = GameMode::MAIN_MENU;
+			break;
+
+		case BtnFunc::BtnFunc::PA_CONTINUE:
+			curGameMode = GameMode::GAME_PROCESS;
+			break;
+
+		case BtnFunc::BtnFunc::PA_SAVE:
+
+			break;
+
+		case BtnFunc::BtnFunc::PA_EXIT:
+			mainWindow->close();
+			break;
+		}
+	}	// Pause }
+	else if (curGameMode == GameMode::DEATH)
+	{
+
+	}
+}
 
 // Handler things }
 

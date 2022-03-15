@@ -69,11 +69,44 @@ enum class GameMode
 	NONE
 };
 
+namespace BtnFunc
+{
+	enum class BtnFunc
+	{
+		NONE,
+		// mainMenu
+		MM_NEW_GAME,
+		MM_CONTINUE,
+		MM_SETTING,
+		MM_EXIT,
+		// settings
+		S_ACCEPT,
+		S_CANCLE,
+		S_DEFAULT_SETTINGS,
+		S_BACK,
+		// pause
+		PA_CONTINUE,
+		PA_BACK_TO_MAIN_MENU,
+		PA_SAVE,
+		PA_EXIT,
+		// death
+		DE_BACK_TO_MAIN_MENU,
+		DE_EXIT,
+		// dialog
+		DI_NEXT_SLIDE,
+		DI_SKIP
+	};
+
+}
+
+
 class Button;
 
 class HUD : public DrawableObject
 {
 private:
+
+	sf::Mutex* supMutex = nullptr;
 
 	GameMode currentGameMode = GameMode::MAIN_MENU;
 
@@ -104,7 +137,7 @@ public:
 
 	virtual ~HUD();
 
-	void drawSockets(sf::RenderWindow* w);
+	
 
 	// Add new socket(default is <EMPTY>)
 	void addSocket(SocketFunc sFunc = SocketFunc::EMPTY_SOCKET, DrawableObject* obj = nullptr);
@@ -112,9 +145,6 @@ public:
 	void addInSocket(SocketFunc sClass, DrawableObject* obj);
 
 	void setCharacter(CharTemplate* aChar) { character = aChar; }
-
-	void drawHpMpBars(sf::RenderWindow* w, int const &hp, int const &mp);
-
 
 	void drawMainMenu(sf::RenderWindow* w);
 
@@ -148,39 +178,22 @@ public:
 	
 	bool checkMouseClickOnButton(sf::Vector2i const &_mousePosition);
 
+	std::tuple<bool, BtnFunc::BtnFunc> dropIsClickedButoonStatus() const&;
+
 
 private:
 
+	
 
+	void drawHpMpBars(sf::RenderWindow* w, int const& hp, int const& mp);
 
+	void drawSockets(sf::RenderWindow* w);
 
 };
 
 // Buttons {
 
-namespace BtnFunc
-{
-	enum class BtnFunc
-	{
-		NONE,
-		// mainMenu
-		MM_NEW_GAME,
-		MM_CONTINUE,
-		MM_SETTING,
-		// settings
-		S_ACCEPT,
-		S_CANCLE,
-		S_DEFAULT_SETTINGS,
-		S_BACK,
-		// pause
-		PA_CONTINUE,
-		PA_BACK_TO_MAIN_MENU,
-		PA_SAVE,
 
-		EXIT
-	};
-
-}
 
 
 class Button : public DrawableObject
@@ -246,6 +259,7 @@ public:
 	void setCharacterSize(int const  &_size);
 
 	void setBtnIsPressed(bool const& _value) { isPressed = _value; }
+	bool getBtnIsPressedStatus() const { return isPressed; }
 
 	bool checkMouseClick(sf::Vector2i const &_mousePos);
 };

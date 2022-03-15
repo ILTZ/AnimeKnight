@@ -89,6 +89,10 @@ public:
 
 	void mainRenderProcess();
 
+	// Will be many options what we need to draw in window:
+	// HUD + lvl, only HUD, only buttons etc.
+	void drawProcess();
+
 	void addSpriteToBackgroundLayout(sf::Sprite* something);
 
 	void addDrawableToAnimationsObject(DrawableObject* object);
@@ -96,6 +100,9 @@ public:
 	sf::RenderWindow* getRenderWindow() const { return mainWindow; }
 
 	
+	void setHUD(HUD* _hud) { hud = _hud; }
+	HUD* getHUD() const { return hud; }
+
 
 	int getCurrentFrameRate() const { return frameRate; }
 
