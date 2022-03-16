@@ -402,9 +402,9 @@ void CollisionHendler::collisionMainProcess()
 {
 	while (gameContinue)
 	{
-		if (isEnable)
+		if (cureGameMode == GameMode::GAME_PROCESS)
 		{
-
+			
 			checkAllObjectsCollision();
 
 		}

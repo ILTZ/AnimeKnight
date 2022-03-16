@@ -1,6 +1,101 @@
 #include "RenderController.h"
+#include "MainCharacter.h"
+#include <thread>
 
 #define LOG(str) printf("RenderController::LOG::%s\n", str)
+
+namespace ThreadTasks
+{
+	template <typename T>
+	class Task : public std::thread
+	{
+	private:
+
+		int curID;
+
+		bool taskCompleted = false;
+
+		std::thread* thisTaskThread = nullptr;
+
+	public:
+		
+		Task(T *_attachFunc)
+		{
+			thisTaskThread = new std::thread([&]
+				{
+					_attachFunc();
+					taskCompleted = true;
+				});
+
+		}
+
+		~Task()
+		{
+			if (thisTaskThread)
+			{
+				delete thisTaskThread;
+			}
+		}
+
+
+		void run()
+		{
+			if (thisTaskThread)
+			{
+				thisTaskThread->_Start();
+			}
+		}
+
+		bool isComplited()
+		{
+			return taskCompleted;
+		}
+
+		void join()
+		{
+			if (thisTaskThread)
+			{
+				thisTaskThread->join();
+			}
+		}
+
+		void attachFunc(T* _attachFunc)
+		{
+			if (thisTaskThread)
+				delete thisTaskThread;
+
+			taskCompleted = false;
+
+			thisTaskThread = new std::thread([&]
+				{
+					_attachFunc();
+					taskCompleted = true;
+				});
+
+		}
+
+	private:
+	};
+}
+
+
+
+
+namespace PathToLvlResources
+{
+	namespace LVL_1
+	{
+
+	}
+	namespace LVL_2
+	{
+
+	}
+	namespace LVL_3
+	{
+
+	}
+}
 
 
 RenderController::RenderController()
@@ -14,18 +109,18 @@ RenderController::RenderController(int const& wWidth, int const& wHeight)
 	: windowWidth{wWidth},windowHeight{wHeight}
 {
 	mainWindow = new sf::RenderWindow(sf::VideoMode(wWidth, wHeight), "AnimeKnight", sf::Style::Titlebar | sf::Style::Close);
-	
-
-
-	addDrawableToAnimationsObject(hud);
-
 
 	debugMsg("MainWindow is created.");
-
 	Level* nl = new Level();
 	nl->setBackgroundSprite("K:\\PixelSheat\\Knight\\Sprites\\Backgrounds\\Dung.png");
 
 	allLevels.push_back(nl);
+
+
+	
+
+	
+
 }
 
 void RenderController::drawProcess()
@@ -36,16 +131,20 @@ void RenderController::drawProcess()
 		{
 		case GameMode::GAME_PROCESS:
 			allLevels[currentLvlCount]->drawLevel(mainWindow);
+
+			drawAnimationObjects();
+
 			if (hud)
 				hud->drawGameHud(mainWindow);
-			drawAnimationObjects();
 			break;
 
 		case GameMode::PAUSE:
 			allLevels[currentLvlCount]->drawLevel(mainWindow);
+			
+			drawAnimationObjects();
+
 			if (hud)
 				hud->drawPauseMenu(mainWindow);
-			drawAnimationObjects();
 			break;
 
 		case GameMode::MAIN_MENU:
@@ -57,6 +156,10 @@ void RenderController::drawProcess()
 			break;
 
 		case GameMode::DEATH:
+
+			break;
+
+		case GameMode::NEW_GAME:
 
 			break;
 		}
@@ -191,7 +294,7 @@ void RenderController::setEventHandler(EventHandler* handler)
 
 void RenderController::collisionPreparation()
 {
-	if ((colHendler && allLevels[0]) && (!(prepWasDone)))
+	if ((colHendler && allLevels[currentLvlCount]) && (!(prepWasDone)))
 	{
 		colHendler->getCollisionObjectFromlvl(allLevels[currentLvlCount]);
 		colHendler->setCollisionHandlerEnabled(true);
@@ -207,3 +310,81 @@ void RenderController::setPropertiesForCollisionHandler()
 
 	}
 }
+
+// Preparations afterswitch game mode {
+
+bool RenderController::prepareForNewGame()
+{
+	mainCharacter = new MainCharacter();
+	if (!mainCharacter)
+		throw;
+
+	colHendler = new CollisionHendler();
+	if (!colHendler)
+		throw;
+
+	if (!prepareLVL(currentLvlCount))
+		throw;
+
+
+
+
+	return false;
+}
+
+bool RenderController::prepareForContinueGame()
+{
+
+
+
+
+	return false;
+}
+
+bool RenderController::preapareCollisionObjects()
+{
+	if ((colHendler && allLevels[currentLvlCount]) && (!(prepWasDone)))
+	{
+		colHendler->getCollisionObjectFromlvl(allLevels[currentLvlCount]);
+		colHendler->setCollisionHandlerEnabled(true);
+		prepWasDone = true;
+		return true;
+	}
+	return false;
+}
+
+bool RenderController::prepareLVL(int const& _lvlCount)
+{
+	Level* nl = new Level();
+
+	switch (_lvlCount)
+	{
+	case 1:
+
+		return true;
+		break;
+
+	case 2:
+
+		return true;
+		break;
+
+	case 3:
+
+		
+		return true;
+		break;
+
+	default:
+
+
+		delete nl;
+		return false;
+		break;
+	}
+	
+
+	return false;
+}
+
+// Preparations afterswitch game mode }

@@ -61,6 +61,9 @@ private:
 enum class GameMode
 {
 	MAIN_MENU,
+	NEW_GAME,
+	CONTINUE_GAME_FROM_MENU,
+	GAME_LAUNCH,
 	PAUSE,
 	DEATH,
 	INVENTORY,

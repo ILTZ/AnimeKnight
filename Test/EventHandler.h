@@ -31,6 +31,10 @@ private:
 
 	RenderController* renderController = nullptr;
 
+	bool isWork = false;
+
+	GameMode cureGameMode = GameMode::NONE;
+
 public:
 
 	CollisionHendler();
@@ -61,6 +65,9 @@ public:
 
 	void collisionMainProcess();
 
+	void setWorkState(bool const& _workState) { isWork = _workState; }
+
+	void setGameMode(GameMode const& _gameMode) { cureGameMode = _gameMode; }
 private:
 
 

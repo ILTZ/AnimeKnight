@@ -10,6 +10,7 @@
 #include "HUD.h"
 #include "Level.h"
 
+
 class RenderController
 {
 private:
@@ -21,6 +22,8 @@ private:
 	HUD* hud = nullptr;
 
 	CollisionHendler* colHendler = nullptr;
+
+	CharTemplate* mainCharacter = nullptr;
 
 	int windowWidth{ 0 };
 
@@ -126,8 +129,23 @@ public:
 // Handlers }
 
 
+	// Preparations before render {
+private:
 
+	bool prepareForNewGame();
+	bool prepareForNGGood = false;
 
+	bool prepareForContinueGame();
+	bool prepareForCCGGood = false;
+
+	// Send all collision obj on lvl in collision handler
+	bool preapareCollisionObjects();
+	bool collisionGood = false;
+
+	bool prepareLVL(int const& _lvlCount);
+	bool prepLVLGood = true;
+
+public:
 
 
 	bool debugMode = false;
