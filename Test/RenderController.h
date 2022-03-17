@@ -142,8 +142,12 @@ private:
 	bool preapareCollisionObjects();
 	bool collisionGood = false;
 
-	bool prepareLVL(int const& _lvlCount);
+	void prepareLVL(int const& _lvlCount);
 	bool prepLVLGood = true;
+
+
+	bool handlerIsWork = false;
+	void launchHandler();
 
 public:
 

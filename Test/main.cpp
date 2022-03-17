@@ -16,10 +16,33 @@ const int wHeight = 900;
 const float curGS = .15f;
 const int frameRate = 60;
 
+#include <functional>
+
+template <typename T>
+void jopa(const T& f)
+{
+	std::thread* t = new std::thread([&] {
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+		f();
+		});
+	
+}
+
+
+
 int main()
 {
 	
+	
+	jopa([]{
+		std::cout << "Fak of";
+		});
 
+
+
+
+
+	
 
 	Texture* t = new sf::Texture();
 	t->loadFromFile("K:\\PixelSheat\\Knight\\Sprites\\Backgrounds\\Dung.png");

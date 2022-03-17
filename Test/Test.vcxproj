@@ -164,6 +164,7 @@
     <ClCompile Include="PicableItem.cpp" />
     <ClCompile Include="RenderController.cpp" />
     <ClCompile Include="Sceleton_enemy.cpp" />
+    <ClCompile Include="Tasks.cpp" />
     <ClCompile Include="WeaponBase.cpp" />
     <ClCompile Include="WeaponList.cpp" />
   </ItemGroup>
@@ -180,6 +181,7 @@
     <ClInclude Include="RenderController.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sceleton_enemy.h" />
+    <ClInclude Include="Tasks.h" />
     <ClInclude Include="WeaponBase.h" />
     <ClInclude Include="WeaponList.h" />
   </ItemGroup>

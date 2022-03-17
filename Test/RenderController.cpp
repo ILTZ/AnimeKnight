@@ -1,82 +1,10 @@
 #include "RenderController.h"
 #include "MainCharacter.h"
-#include <thread>
+#include "Tasks.h"
 
 #define LOG(str) printf("RenderController::LOG::%s\n", str)
 
-namespace ThreadTasks
-{
-	template <typename T>
-	class Task : public std::thread
-	{
-	private:
 
-		int curID;
-
-		bool taskCompleted = false;
-
-		std::thread* thisTaskThread = nullptr;
-
-	public:
-		
-		Task(T *_attachFunc)
-		{
-			thisTaskThread = new std::thread([&]
-				{
-					_attachFunc();
-					taskCompleted = true;
-				});
-
-		}
-
-		~Task()
-		{
-			if (thisTaskThread)
-			{
-				delete thisTaskThread;
-			}
-		}
-
-
-		void run()
-		{
-			if (thisTaskThread)
-			{
-				thisTaskThread->_Start();
-			}
-		}
-
-		bool isComplited()
-		{
-			return taskCompleted;
-		}
-
-		void join()
-		{
-			if (thisTaskThread)
-			{
-				thisTaskThread->join();
-			}
-		}
-
-		void attachFunc(T* _attachFunc)
-		{
-			if (thisTaskThread)
-				delete thisTaskThread;
-
-			taskCompleted = false;
-
-			thisTaskThread = new std::thread([&]
-				{
-					_attachFunc();
-					taskCompleted = true;
-				});
-
-		}
-
-	private:
-	};
-}
 
 
 
@@ -136,6 +64,9 @@ void RenderController::drawProcess()
 
 			if (hud)
 				hud->drawGameHud(mainWindow);
+
+			if (colHendler)
+				colHendler->setGameMode(GameMode::GAME_PROCESS);
 			break;
 
 		case GameMode::PAUSE:
@@ -167,6 +98,7 @@ void RenderController::drawProcess()
 }
 
 
+
 void RenderController::mainRenderProcess()
 {
 	if (!mainWindow)
@@ -188,8 +120,10 @@ void RenderController::mainRenderProcess()
 		
 		mainWindow->clear();
 
-		if (eventHandler)
-			eventHandler->doHandlerWork();
+		//if (eventHandler)
+		//	eventHandler->doHandlerWork();
+
+		launchHandler();
 
 		sf::Event svent;
 		while (mainWindow->pollEvent(svent))
@@ -211,8 +145,7 @@ void RenderController::mainRenderProcess()
 		drawProcess();
 
 		renderMutex.unlock();
-		
-
+	
 
 
 		mainWindow->display();
@@ -221,6 +154,23 @@ void RenderController::mainRenderProcess()
 	
 }
 
+void RenderController::launchHandler()
+{
+	if (handlerIsWork)
+		return;
+
+	if (!eventHandler)
+	{
+		ThreadTasks::Tasks* t = new ThreadTasks::Tasks();
+		t->setFunc([&] {
+			while (true)
+			{
+				eventHandler->doHandlerWork();
+			}
+			});
+		t->startTask();
+	}
+}
 
 // Render work {
 
@@ -311,7 +261,9 @@ void RenderController::setPropertiesForCollisionHandler()
 	}
 }
 
-// Preparations afterswitch game mode {
+// Preparations after switch game mode {
+
+
 
 bool RenderController::prepareForNewGame()
 {
@@ -322,10 +274,14 @@ bool RenderController::prepareForNewGame()
 	colHendler = new CollisionHendler();
 	if (!colHendler)
 		throw;
+	
 
-	if (!prepareLVL(currentLvlCount))
-		throw;
+	ThreadTasks::Tasks* t = new ThreadTasks::Tasks();
+	t->setFunc(std::function<void(RenderController*, int)>(&RenderController::prepareLVL), this, 0);
+	
 
+	//ThreadTasks::Tasks* temp = new ThreadTasks::Tasks();
+	//temp->setFunc(prepareLVL, currentLvlCount);
 
 
 
@@ -335,7 +291,7 @@ bool RenderController::prepareForNewGame()
 bool RenderController::prepareForContinueGame()
 {
 
-
+	
 
 
 	return false;
@@ -353,7 +309,7 @@ bool RenderController::preapareCollisionObjects()
 	return false;
 }
 
-bool RenderController::prepareLVL(int const& _lvlCount)
+void RenderController::prepareLVL(int const& _lvlCount)
 {
 	Level* nl = new Level();
 
@@ -361,30 +317,30 @@ bool RenderController::prepareLVL(int const& _lvlCount)
 	{
 	case 1:
 
-		return true;
+		return;
 		break;
 
 	case 2:
 
-		return true;
+		return;;
 		break;
 
 	case 3:
 
 		
-		return true;
+		return;
 		break;
 
 	default:
 
 
 		delete nl;
-		return false;
+		return;
 		break;
 	}
 	
 
-	return false;
+	return;
 }
 
 // Preparations afterswitch game mode }

@@ -45,6 +45,9 @@ void printCoords(int x, int y)
 
 void EventHandler::doHandlerWork()
 {
+	if (mainWindow)
+		mainWindow->setActive();
+
 	if (curGameMode == GameMode::GAME_PROCESS)
 	{
 		if (!mainWindow || !currentPawn)
@@ -247,6 +250,9 @@ void EventHandler::doHandlerWork()
 			}
 		}
 	}
+
+	if (mainWindow)
+		mainWindow->setActive(false);
 }
 
 
@@ -304,6 +310,8 @@ void EventHandler::clickOnButtonCommandHandler(BtnFunc::BtnFunc const& _func)
 	{
 
 	}
+
+	
 }
 
 // Handler things }
