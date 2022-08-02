@@ -104,6 +104,9 @@
     <ClInclude Include="Paths.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="ModifyClasses.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
     <ClInclude Include="Tasks.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>

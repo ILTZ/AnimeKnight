@@ -24,7 +24,7 @@ void EventHandler::setControlPawn(CharTemplate* character)
 
 	currentPawn = character;
 }
-void EventHandler::setMainWindow(sf::RenderWindow* window)
+/*void EventHandler::setMainWindow(sf::RenderWindow* window)
 {
 	if (!window)
 	{
@@ -32,7 +32,7 @@ void EventHandler::setMainWindow(sf::RenderWindow* window)
 	}
 
 	mainWindow = window;
-}
+}*/
 
 
 // Handler things {
@@ -43,10 +43,39 @@ void printCoords(int x, int y)
 	std::cout << x << ":" << y << std::endl;
 }
 
+void EventHandler::doHandlerWorkLoop()
+{
+	while (true)
+	{
+		if (currentPawn)
+		{
+			try
+			{
+				for (int i = 0; i < keyEvents.size(); ++i)
+				{
+					doHandlerWorkB(keyEvents[i].event);
+					keyEvents.erase(keyEvents.begin() + i);
+
+				}
+
+				for (int i = 0; i < mouseEvents.size(); ++i)
+				{
+					mouseEventHandler(mouseEvents[i].mousePos, mouseEvents[i].event);
+					mouseEvents.erase(mouseEvents.begin() + i);
+				}
+			}
+			catch (...)
+			{
+				LOG("EventHandler", "something wrong with doHandlerWorkLoop");
+			}
+		}
+	}
+}
+
+
+
 void EventHandler::doHandlerWork()
 {
-	if (mainWindow)
-		mainWindow->setActive();
 
 	if (curGameMode == GameMode::GAME_PROCESS)
 	{
@@ -251,9 +280,251 @@ void EventHandler::doHandlerWork()
 		}
 	}
 
-	if (mainWindow)
-		mainWindow->setActive(false);
 }
+
+
+void EventHandler::doHandlerWorkB(sf::Event const &event)
+{
+	if (event.type == sf::Event::Closed)
+	{
+		mainWindow->close();
+	}
+
+	// Key handler {
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A) ||
+		sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	{
+		currentPawn->moveToSomeSide(CurrentDirection::LEFT);
+		//return;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) ||
+		sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	{
+		currentPawn->moveToSomeSide(CurrentDirection::RIGHT);
+		//return;
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) ||
+		sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+	{
+		currentPawn->jump(CurrentDirection::UP, 1);
+		//return;
+	}
+
+	if (event.type == sf::Event::KeyPressed)
+	{
+
+		switch (event.key.code)
+		{
+			/*case sf::Keyboard::A:
+			case sf::Keyboard::Left:
+				currentPawn->moveToSomeSide(CurrentDirection::LEFT);
+				break;
+
+			case sf::Keyboard::D:
+			case sf::Keyboard::Right:
+				currentPawn->moveToSomeSide(CurrentDirection::RIGHT);
+				break;
+
+			case sf::Keyboard::W:
+			case sf::Keyboard::Up:
+				currentPawn->jump(CurrentDirection::UP, 1);
+				break;
+
+			case sf::Keyboard::S:
+			case sf::Keyboard::Down:
+				currentPawn->moveToSomeSide(CurrentDirection::BOT);
+				break;*/
+
+		case sf::Keyboard::Escape:
+			if (hud)
+				hud->prepareBtnsForMenu("pa");
+			curGameMode = GameMode::PAUSE;
+			break;
+
+
+
+		case sf::Keyboard::Q:
+			currentPawn->useAbility(1);
+			break;
+		case sf::Keyboard::E:
+			currentPawn->useAbility(2);
+			break;
+
+
+
+		case sf::Keyboard::R:
+			currentPawn->usePoushen(1);
+			break;
+
+		case sf::Keyboard::F:
+			currentPawn->interactiveAction();
+			break;
+
+			// Weapon switch {
+
+		case sf::Keyboard::Num1:
+			currentPawn->changeWeapon(1);
+			hud->addInSocket(SocketFunc::WEAPON_SOCKET, currentPawn->getCurrentWeapon());
+			break;
+
+		case sf::Keyboard::Num2:
+			currentPawn->changeWeapon(3);
+			hud->addInSocket(SocketFunc::WEAPON_SOCKET, currentPawn->getCurrentWeapon());
+			break;
+
+		case sf::Keyboard::Num3:
+			currentPawn->changeWeapon(2);
+			hud->addInSocket(SocketFunc::WEAPON_SOCKET, currentPawn->getCurrentWeapon());
+			break;
+
+		case sf::Keyboard::Num4:
+			currentPawn->changeWeapon(4);
+			hud->addInSocket(SocketFunc::WEAPON_SOCKET, currentPawn->getCurrentWeapon());
+			break;
+		}
+	}
+	else if (event.type == sf::Event::KeyReleased)
+	{
+		switch (event.key.code)
+		{
+		case sf::Keyboard::W:
+		case sf::Keyboard::Up:
+			currentPawn->jump(CurrentDirection::BOT, 0);
+			break;
+
+		default:
+			currentPawn->moveToSomeSide(CurrentDirection::STAY);
+			break;
+		}
+
+
+	}
+
+	// Key handler }
+
+
+	// Mouse Handler {
+
+	if (event.type == sf::Event::MouseButtonPressed)
+	{
+		if (event.mouseButton.button == sf::Mouse::Left)
+		{
+			currentPawn->dropTimer();
+			currentPawn->attack();
+		}
+	}
+	else if (event.type == sf::Event::MouseButtonReleased)
+	{
+
+	}
+
+	if (curGameMode == GameMode::MAIN_MENU || curGameMode == GameMode::PAUSE)
+	{
+		if (!mainWindow || !currentPawn)
+			return;
+		if (!(mainWindow->isOpen()))
+			return;
+		if (!hud)
+			return;
+
+		
+			if (event.type == sf::Event::Closed)
+			{
+				mainWindow->close();
+			}
+
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::Escape &&
+					curGameMode == GameMode::PAUSE)
+					curGameMode = GameMode::GAME_PROCESS;
+
+
+
+			}
+
+
+			if (event.type == sf::Event::MouseButtonPressed)
+			{
+				hud->checkMouseClickOnButton(sf::Mouse::getPosition(*mainWindow));
+			}
+			if (event.type == sf::Event::MouseButtonReleased)
+			{
+				bool result;
+				BtnFunc::BtnFunc temp;
+
+				std::tie(result, temp) = hud->dropIsClickedButoonStatus();
+
+				if (result)
+				{
+					clickOnButtonCommandHandler(temp);
+				}
+
+			
+		}
+	}
+}
+
+
+void EventHandler::mouseEventHandler(sf::Vector2i const& _mousePos, sf::Event const& _event)
+{
+	if (curGameMode == GameMode::MAIN_MENU || curGameMode == GameMode::PAUSE)
+	{
+		if (!mainWindow || !currentPawn)
+			return;
+		if (!(mainWindow->isOpen()))
+			return;
+		if (!hud)
+			return;
+
+
+
+		if (_event.type == sf::Event::MouseButtonPressed)
+		{
+			hud->checkMouseClickOnButton(_mousePos);
+		}
+		if (_event.type == sf::Event::MouseButtonReleased)
+		{
+			bool result;
+			BtnFunc::BtnFunc temp;
+
+			std::tie(result, temp) = hud->dropIsClickedButoonStatus();
+
+			if (result)
+			{
+				clickOnButtonCommandHandler(temp);
+			}
+		}
+	}
+	if (curGameMode == GameMode::GAME_PROCESS)
+	{
+		if (_event.type == sf::Event::MouseButtonPressed)
+		{
+			if (_event.mouseButton.button == sf::Mouse::Left)
+			{
+				currentPawn->dropTimer();
+				currentPawn->attack();
+			}
+		}
+		else if (_event.type == sf::Event::MouseButtonReleased)
+		{
+
+		}
+	}
+}
+
+
+void EventHandler::addKeyEvent(sf::Event const& _event)
+{
+	keyEvents.push_back(KeyEvent(_event));
+}
+
+void EventHandler::addMouseEvent(sf::Event const& _event, sf::Vector2i const& _mousePos)
+{
+	mouseEvents.push_back(MouseEvent(_event, _mousePos));
+}
+
 
 
 void EventHandler::clickOnButtonCommandHandler(BtnFunc::BtnFunc const& _func)

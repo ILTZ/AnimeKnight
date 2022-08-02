@@ -176,6 +176,7 @@
     <ClInclude Include="HUD.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="MainCharacter.h" />
+    <ClInclude Include="ModifyClasses.h" />
     <ClInclude Include="Paths.h" />
     <ClInclude Include="PicableItem.h" />
     <ClInclude Include="RenderController.h" />

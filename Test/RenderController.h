@@ -11,13 +11,15 @@
 #include "Level.h"
 
 
+
 class RenderController
 {
 private:
 
 	EventHandler* eventHandler = nullptr;
 
-	sf::RenderWindow* mainWindow = nullptr;
+	//sf::RenderWindow* mainWindow = nullptr;
+	ModifyClasses::MainWindow* mainWindow = nullptr;
 
 	HUD* hud = nullptr;
 
@@ -85,7 +87,7 @@ public:
 
 // Constructors }
 
-
+	void catchWindowEvent();
 
 
 // Render things {

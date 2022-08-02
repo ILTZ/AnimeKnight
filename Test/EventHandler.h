@@ -6,6 +6,8 @@
 #include "HUD.h"
 #include "Level.h"
 
+#include "ModifyClasses.h"
+
 class RenderController;
 
 
@@ -75,11 +77,39 @@ private:
 };
 
 
+
+// Events things {
+struct KeyEvent
+{
+	sf::Event event;
+
+	KeyEvent(sf::Event const& _event)
+	{
+		event = _event;
+	}
+};
+
+struct MouseEvent
+{
+	sf::Event event;
+	sf::Vector2i mousePos;
+
+
+	MouseEvent(sf::Event const& _event, sf::Vector2i const& _mousePos)
+	{
+		event = _event;
+		mousePos = _mousePos;
+	}
+
+};
+
+
+
 class EventHandler
 {
 private:
 
-	sf::RenderWindow* mainWindow = nullptr;
+	ModifyClasses::MainWindow* mainWindow = nullptr;
 
 	CharTemplate* currentPawn = nullptr;
 
@@ -89,27 +119,52 @@ private:
 
 	RenderController* renderController = nullptr;
 
+	//std::vector<sf::Event> events;
+	//std::vector<sf::Event> mouseEvents;
+
+
+	std::vector<KeyEvent> keyEvents;
+	std::vector<MouseEvent> mouseEvents;
+
 public:
 	EventHandler();
 	
 	~EventHandler();
 
 	void doHandlerWork();
+	
+	void doHandlerWorkLoop();
 
 	void setControlPawn(CharTemplate* character);
 
-	void setMainWindow(sf::RenderWindow* window);
+	void setMainWindow(ModifyClasses::MainWindow* _mw) { mainWindow = _mw; }
 
 	void setHUD(HUD* h) { hud = h; }
 
 	void setGameMode(GameMode const& _gm) { curGameMode = _gm; }
 	GameMode getGameMode() const { return curGameMode; }
 
+	//void addEvent(sf::Event& _event) { events.push_back(_event); }
+
+	
+	void addKeyEvent(sf::Event const& _event);
+	void addMouseEvent(sf::Event const& _event, sf::Vector2i const& _mousePos);
+
+
+
 private:
+
+	bool deleteEvent(int const& _index);
 
 	void setRenderController(RenderController* _rc) { renderController = _rc; }
 
 	void clickOnButtonCommandHandler(BtnFunc::BtnFunc const& _func);
+
+	void doHandlerWorkB(sf::Event const& event);
+
+	void mouseEventHandler(sf::Vector2i const &_mousePos, sf::Event const& _event);
+
+
 };
 
 

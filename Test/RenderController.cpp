@@ -36,8 +36,9 @@ RenderController::RenderController()
 RenderController::RenderController(int const& wWidth, int const& wHeight) 
 	: windowWidth{wWidth},windowHeight{wHeight}
 {
-	mainWindow = new sf::RenderWindow(sf::VideoMode(wWidth, wHeight), "AnimeKnight", sf::Style::Titlebar | sf::Style::Close);
-
+	//mainWindow = new sf::RenderWindow(sf::VideoMode(wWidth, wHeight), "AnimeKnight", sf::Style::Titlebar | sf::Style::Close);
+	mainWindow = new ModifyClasses::MainWindow(sf::VideoMode(wWidth, wHeight), "AnimeKnight", sf::Style::Titlebar | sf::Style::Close);
+	
 	debugMsg("MainWindow is created.");
 	Level* nl = new Level();
 	nl->setBackgroundSprite("K:\\PixelSheat\\Knight\\Sprites\\Backgrounds\\Dung.png");
@@ -115,43 +116,69 @@ void RenderController::mainRenderProcess()
 		collisionPreparation();
 
 		
-		mainWindow->setActive(true);
+		//mainWindow->setActive(true);
 
 		
-		mainWindow->clear();
-
-		//if (eventHandler)
-		//	eventHandler->doHandlerWork();
-
 		launchHandler();
+		catchWindowEvent();
 
-		sf::Event svent;
-		while (mainWindow->pollEvent(svent))
-		{
-			if (svent.type == sf::Event::Closed)
-			{
-				mainWindow->close();
-			}
-		}
+		/*if (eventHandler)
+			eventHandler->doHandlerWork();*/
 
 
+
+		//while (!mainWindow->setActiveSafe(true)) {}
 		
-		renderMutex.lock();
+		mainWindow->setActive(true);
+		
+		
 
 		//allLevels[0]->drawLevel(mainWindow);
 
 		//drawAnimationObjects();
+		mainWindow->clear();
 
 		drawProcess();
 
-		renderMutex.unlock();
-	
-
-
 		mainWindow->display();
 
+		mainWindow->setActive(false);
+
+		//while (!mainWindow->setActiveSafe(false)) {}
+		
+
+
+		
+		
 	}
 	
+}
+
+void RenderController::catchWindowEvent()
+{
+	sf::Event event;
+	while (mainWindow->pollEvent(event))
+	{
+
+		if (event.type == sf::Event::KeyPressed ||
+			event.type == sf::Event::KeyReleased ||
+			event.type == sf::Event::Closed)
+		{
+			if (eventHandler)
+			{
+				eventHandler->addKeyEvent(event);
+			}
+		}
+		else if (event.type == sf::Event::MouseButtonPressed ||
+			event.type == sf::Event::MouseButtonReleased)
+		{
+			if (eventHandler)
+			{
+				eventHandler->addMouseEvent(event, sf::Mouse::getPosition(*mainWindow));
+			}
+		}
+
+	}
 }
 
 void RenderController::launchHandler()
@@ -159,16 +186,23 @@ void RenderController::launchHandler()
 	if (handlerIsWork)
 		return;
 
-	if (!eventHandler)
+	if (eventHandler)
 	{
 		ThreadTasks::Tasks* t = new ThreadTasks::Tasks();
-		t->setFunc([&] {
+		//eventHandler->setMainWindow(mainWindow);
+		sf::Thread* st = new sf::Thread(&EventHandler::doHandlerWorkLoop, eventHandler);
+		st->launch();
+
+		//t->setFunc(std::function<void(EventHandler*)>(&EventHandler::doHandlerWorkLoop), eventHandler);
+		//t->startTask();
+		/*t->setFunc([&] {
 			while (true)
 			{
 				eventHandler->doHandlerWork();
 			}
 			});
-		t->startTask();
+		t->startTask();*/
+		handlerIsWork = true;
 	}
 }
 
